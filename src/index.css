@@ -11,6 +11,7 @@ body {
     font-family: 'Open Sans', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    background-color: rgb(31 41 55);
 }
 
 .gradient-bg-welcome {

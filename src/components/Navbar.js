@@ -62,17 +62,31 @@ const NavBarItems = ({ title, classProps }) => {
 }
 
 function Navbar() {
-    const [toggleMenu, setToggleMenu] = useState(false)
+    const [account, setAccount] = useState(null)
     const [error, setError] = useState()
+    let chain
     const ethereum = window.ethereum
+
+    useEffect(() => {
+        ethereum.on('accountsChanged', (accounts) => {
+            setAccount(accounts[0])
+        })
+
+        ethereum.on('chainChanged', (_chainId) => {
+            chain = _chainId
+            console.log('chainId:', chain)
+            if (chain !== '0x4') {
+                setError('Wrong Network!')
+            } else {
+                setError('')
+            }
+        })
+        return () => {}
+    }, [])
 
     const handleNetworkSwitch = async (networkName) => {
         setError()
         await changeNetwork({ networkName, setError })
-    }
-
-    const networkChanged = (chainId) => {
-        console.log({ chainId })
     }
 
     async function mtmLogin() {
@@ -82,48 +96,36 @@ function Navbar() {
                 const accounts = await ethereum.request({
                     method: 'eth_requestAccounts',
                 })
-                //const accounts = await ethereum.request({method: "eth_accounts"})
+                setAccount(accounts[0])
             }
         } catch (err) {
             console.log(err)
         }
+        await ethereum.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: '0x4' }],
+        })
     }
 
     return (
-        <nav className="z-50 w-full flex md:justify-center justify-between items-center p-4">
-            <div className="md:flex-[0.5] flex-initial items-center"></div>
-            <ul className="text-white md:flex hidden list-none flex-row justify-between items-center">
-                <li
-                    className="bg-[#2952e3] py-2 px-7 rounded-full items-center justify-center flex cursor-pointer hover:bg-[#6495ED]"
-                    onClick={() => mtmLogin()}
-                >
-                    Connect with Metamask
-                </li>
-            </ul>
-            <div className="flex relative">
-                {toggleMenu ? (
-                    <br /> /*<AiOutlineClose fontSize={28} className='text-white md:hidden cursor-pointer' onClick={() => setToggleMenu(false)}/> */
-                ) : (
-                    <HiMenuAlt4
-                        fontSize={28}
-                        className="text-white md:hidden cursor-pointer"
-                        onClick={() => setToggleMenu(true)}
-                    />
-                )}
-                {toggleMenu && (
-                    <ul
-                        className="z-10 fixed top-0 -right-2 p-3 w-[70vw] h-screen shadow-2xl md:hidden list-none
-                                    flex flex-col justify-start items-end rounded-md blue-glassmorphism text-white animate-slide-in"
+        <nav className="z-50 w-full flex flex-col items-center text-center p-4">
+            {!!account ? (
+                <p className="text-slate-400 text-lg p-3">
+                    {account.slice(0, 5) + '....' + account.slice(-4)}
+                    <p className="text-red-600 font-bold animate-pulse">
+                        {error}
+                    </p>
+                </p>
+            ) : (
+                <ul className="text-white md:flex  list-none flex-row justify-between items-center">
+                    <li
+                        className="bg-[#2952e3] py-2 px-7 rounded-full items-center justify-center flex cursor-pointer hover:bg-[#6495ED]"
+                        onClick={() => mtmLogin()}
                     >
-                        <li className="text-xl w-full my-2">
-                            <AiOutlineClose
-                                className="cursor-pointer"
-                                onClick={() => setToggleMenu(false)}
-                            />
-                        </li>
-                    </ul>
-                )}
-            </div>
+                        Connect with Metamask
+                    </li>
+                </ul>
+            )}
         </nav>
     )
 }
