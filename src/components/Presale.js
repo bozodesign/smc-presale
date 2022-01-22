@@ -102,10 +102,18 @@ function Presale() {
 
     async function buy(smc) {
         document.getElementById('usdt').setAttribute('disabled', 'disabled')
-        const tx = tokenContract
-            .transfer(smcContract, ethers.utils.parseUnits(smc, 18))
+        const tx = await tokenContract.transfer(
+            smcContract,
+            ethers.utils.parseUnits(smc, 18)
+        )
+        const receipt = await tx
+            .wait(3)
             .then((x) => {
                 console.log('tx:', x)
+                console.log('txHash:', x.transactionHash)
+                if (x.confirmations >= 1) {
+                    console.log('Confirmed:', x.confirmations)
+                }
                 setUsdt(0)
                 getUserBalance()
                 setIsProcess(false)
