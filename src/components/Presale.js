@@ -107,13 +107,14 @@ function Presale() {
             ethers.utils.parseUnits(smc, 18)
         )
         const receipt = await tx
-            .wait(3)
+            .wait(1)
             .then((x) => {
-                console.log('tx:', x)
+                //console.log('tx:', x)
                 console.log('txHash:', x.transactionHash)
                 if (x.confirmations >= 1) {
                     console.log('Confirmed:', x.confirmations)
                 }
+                console.log('USDT Check :', x.to) // USDT contract address
                 setUsdt(0)
                 getUserBalance()
                 setIsProcess(false)
