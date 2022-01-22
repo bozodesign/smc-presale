@@ -32,9 +32,14 @@ export default function TxList() {
 
     //
     if (tx.result !== undefined) {
+        const txFilted = tx.result.filter((x) => {
+            return (
+                x.tokenSymbol === 'USDT' && x.value / 10 ** x.tokenDecimal >= 1
+            )
+        })
         return (
             <div className="flex flex-wrap-reverse flex-row">
-                {tx.result.map((x) => (
+                {txFilted.map((x) => (
                     <div
                         key={x.timeStamp}
                         className="text-gray-400 border rounded-2xl p-3 m-2 border-[#3d4f7c] shadow-lg w-80"
