@@ -68,6 +68,8 @@ function Navbar() {
     const ethereum = window.ethereum
 
     useEffect(() => {
+        getCurrentAccount()
+
         ethereum.on('accountsChanged', (accounts) => {
             setAccount(accounts[0])
         })
@@ -84,9 +86,9 @@ function Navbar() {
         return () => {}
     }, [])
 
-    const handleNetworkSwitch = async (networkName) => {
-        setError()
-        await changeNetwork({ networkName, setError })
+    async function getCurrentAccount() {
+        const accounts = await ethereum.request({ method: 'eth_accounts' })
+        setAccount(accounts[0])
     }
 
     async function mtmLogin() {
