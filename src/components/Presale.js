@@ -50,7 +50,7 @@ const changeNetwork = async ({ networkName, setError }) => {
 
 function Presale() {
     const [smc, setSmc] = useState(0)
-    const [usdt, setUsdt] = useState(0)
+    const [usdt, setUsdt] = useState(1)
     const [isProcess, setIsProcess] = useState(false)
     const [error, setError] = useState()
     const [ustdBalance, setUsdtBalance] = useState(0)
@@ -102,10 +102,13 @@ function Presale() {
 
     async function buy(smc) {
         document.getElementById('usdt').setAttribute('disabled', 'disabled')
-        const tx = await tokenContract.transfer(
-            smcContract,
-            ethers.utils.parseUnits(smc, 18)
-        )
+        const tx = await tokenContract
+            .transfer(smcContract, ethers.utils.parseUnits(smc, 18))
+            .catch((error) => {
+                setIsProcess(false)
+                document.getElementById('usdt').removeAttribute('disabled')
+                setError('Payment error, please check your wallet balance')
+            })
         const receipt = await tx
             .wait(1)
             .then((x) => {
@@ -121,7 +124,9 @@ function Presale() {
                 setUsdtBalance(ustdBalance - smc)
                 document.getElementById('usdt').removeAttribute('disabled')
             })
-            .catch(() => {
+            .catch((error) => {
+                console.log('error code:', error.code)
+                console.error(error)
                 setIsProcess(false)
                 document.getElementById('usdt').removeAttribute('disabled')
             })
@@ -185,6 +190,7 @@ function Presale() {
                         type="button"
                         onClick={() => {
                             setIsProcess(true)
+                            setError('')
                             buy(smc)
                         }}
                         className="text-white w-full mt-2 border-[1px] p-2 border-[#3d4f7c] rounded-full cursor-pointer hover:bg-[#A9A9A9]"
@@ -192,6 +198,7 @@ function Presale() {
                         Book Now
                     </button>
                 )}
+                <p className="text-red-600 font-bold text-sm my-1">{error}</p>
             </div>
         </div>
     )
