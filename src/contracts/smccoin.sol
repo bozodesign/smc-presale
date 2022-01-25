@@ -931,7 +931,7 @@ contract TokenMintERC20Token is ERC20Extended, Ownable, ReentrancyGuard, IERC223
     uint8 private _decimals;
     address public adminAddress; // address of the admin
     address public operatorAddress; // address of the operator
-
+    event NewAdminAddress(address admin);
     event NewOperatorAddress(address operator);
     event TokenRecovery(address indexed token, uint256 amount);
     /**
@@ -975,6 +975,17 @@ contract TokenMintERC20Token is ERC20Extended, Ownable, ReentrancyGuard, IERC223
         operatorAddress = _operatorAddress;
 
         emit NewOperatorAddress(_operatorAddress);
+    }
+
+     /**
+     * @notice Set admin address
+     * @dev Callable by owner
+     */
+    function setAdmin(address _adminAddress) external onlyOwner {
+        require(_adminAddress != address(0), "Cannot be zero address");
+        adminAddress = _adminAddress;
+
+        emit NewAdminAddress(_adminAddress);
     }
 
     /**
