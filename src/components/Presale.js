@@ -194,6 +194,7 @@ function Presale({ contractAddress }) {
                             placeholder="USDT"
                             type="number"
                             min="400"
+                            step="1"
                             id="usdt"
                             keyboardtype="decimal-pad"
                             value={usdt}
