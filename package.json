@@ -3,6 +3,9 @@
     "version": "0.1.0",
     "private": true,
     "dependencies": {
+        "@emotion/react": "^11.7.1",
+        "@emotion/styled": "^11.6.0",
+        "@mui/material": "^5.3.1",
         "@openzeppelin/contracts": "^4.4.2",
         "@testing-library/jest-dom": "^5.16.1",
         "@testing-library/react": "^12.1.2",
@@ -12,12 +15,12 @@
         "javascript-time-ago": "^2.3.10",
         "js-ago": "^2.0.1",
         "mathjs": "^10.1.0",
-        "progressbar.js": "^1.1.0",
         "react": "^17.0.2",
         "react-content-loader": "^6.1.0",
         "react-dom": "^17.0.2",
         "react-icons": "^4.3.1",
         "react-scripts": "5.0.0",
+        "react-sweet-progress": "^1.1.2",
         "react-time-ago": "^7.1.7",
         "web-vitals": "^2.1.4"
     },

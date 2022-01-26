@@ -2,6 +2,8 @@ import React, { useState } from 'react'
 import { FaAngleDoubleDown } from 'react-icons/fa'
 import { BiLoaderAlt } from 'react-icons/bi'
 import { ethers } from 'ethers'
+import Backdrop from '@mui/material/Backdrop'
+import CircularProgress from '@mui/material/CircularProgress'
 
 function Loader() {
     return (
@@ -48,17 +50,25 @@ const changeNetwork = async ({ networkName, setError }) => {
     }
 }
 
-function Presale() {
+function Presale({ contractAddress }) {
     const [smc, setSmc] = useState(0)
     const [usdt, setUsdt] = useState(1)
     const [isProcess, setIsProcess] = useState(false)
     const [error, setError] = useState()
+    const [info, setInfo] = useState()
     const [ustdBalance, setUsdtBalance] = useState(0)
+    const [open, setOpen] = useState(false)
+    const handleClose = () => {
+        setOpen(false)
+    }
+    const handleToggle = () => {
+        setOpen(!open)
+    }
     const ethereum = window.ethereum
     const provider = new ethers.providers.Web3Provider(ethereum)
     let tempSigner = provider.getSigner()
     let abi = require('../abi/IERC20')
-    const smcContract = '0xA0a285f6E742f78b8B0Cf90Fb13918d99219eeDD'
+    const smcContract = contractAddress
     const tokenContractAddress = '0xD9BA894E0097f8cC2BBc9D24D308b98e36dc6D02'
     const tokenContract = new ethers.Contract(
         tokenContractAddress,
@@ -108,7 +118,11 @@ function Presale() {
                 setIsProcess(false)
                 document.getElementById('usdt').removeAttribute('disabled')
                 setError('Payment error, please check your wallet balance')
+                handleClose()
             })
+
+        setInfo('Wait for a confirmation')
+
         const receipt = await tx
             .wait(1)
             .then((x) => {
@@ -123,12 +137,16 @@ function Presale() {
                 setIsProcess(false)
                 setUsdtBalance(ustdBalance - smc)
                 document.getElementById('usdt').removeAttribute('disabled')
+
+                handleClose()
+                setInfo('')
             })
             .catch((error) => {
                 console.log('error code:', error.code)
                 console.error(error)
                 setIsProcess(false)
                 document.getElementById('usdt').removeAttribute('disabled')
+                handleClose()
             })
     }
 
@@ -189,9 +207,17 @@ function Presale() {
                     <button
                         type="button"
                         onClick={() => {
-                            setIsProcess(true)
-                            setError('')
-                            buy(smc)
+                            if (smc < 5) {
+                                setError('$400 Minimum Purchase required')
+                            } else {
+                                setInfo(
+                                    'Waiting for your confirmation on Metamask'
+                                )
+                                handleToggle()
+                                setIsProcess(true)
+                                setError('')
+                                buy(smc)
+                            }
                         }}
                         className="text-white w-full mt-2 border-[1px] p-2 border-[#3d4f7c] rounded-full cursor-pointer hover:bg-[#A9A9A9]"
                     >
@@ -200,6 +226,21 @@ function Presale() {
                 )}
                 <p className="text-red-600 font-bold text-sm my-1">{error}</p>
             </div>
+            <Backdrop
+                sx={{
+                    color: '#fff',
+                    zIndex: (theme) => theme.zIndex.drawer + 1,
+                }}
+                open={open}
+                className="flex flex-col"
+            >
+                <div className="bg-white m-4 text-center text-gray-900 text-lg p-3 rounded-lg w-2/5 display-linebreak">
+                    <CircularProgress color="inherit" />
+                    <br />
+                    {info}
+                </div>
+                <br />
+            </Backdrop>
         </div>
     )
 }

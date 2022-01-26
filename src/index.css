@@ -14,6 +14,10 @@ body {
     background-color: rgb(31 41 55);
 }
 
+.display-linebreak {
+    white-space: pre-line;
+}
+
 .gradient-bg-welcome {
     background-color: #0e2141;
     background-image: radial-gradient(

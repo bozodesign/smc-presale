@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: MIT
 
 
 pragma solidity ^0.8.0;
@@ -81,93 +81,7 @@ abstract contract Ownable is Context {
 
  }
 
- pragma solidity ^0.8.0;
-
-/**
- * @dev Contract module which allows children to implement an emergency stop
- * mechanism that can be triggered by an authorized account.
- *
- * This module is used through inheritance. It will make available the
- * modifiers `whenNotPaused` and `whenPaused`, which can be applied to
- * the functions of your contract. Note that they will not be pausable by
- * simply including this module, only once the modifiers are put in place.
- */
-abstract contract Pausable is Context {
-    /**
-     * @dev Emitted when the pause is triggered by `account`.
-     */
-    event Paused(address account);
-
-    /**
-     * @dev Emitted when the pause is lifted by `account`.
-     */
-    event Unpaused(address account);
-
-    bool private _paused;
-
-    /**
-     * @dev Initializes the contract in unpaused state.
-     */
-    constructor() {
-        _paused = false;
-    }
-
-    /**
-     * @dev Returns true if the contract is paused, and false otherwise.
-     */
-    function paused() public view virtual returns (bool) {
-        return _paused;
-    }
-
-    /**
-     * @dev Modifier to make a function callable only when the contract is not paused.
-     *
-     * Requirements:
-     *
-     * - The contract must not be paused.
-     */
-    modifier whenNotPaused() {
-        require(!paused(), "Pausable: paused");
-        _;
-    }
-
-    /**
-     * @dev Modifier to make a function callable only when the contract is paused.
-     *
-     * Requirements:
-     *
-     * - The contract must be paused.
-     */
-    modifier whenPaused() {
-        require(paused(), "Pausable: not paused");
-        _;
-    }
-
-    /**
-     * @dev Triggers stopped state.
-     *
-     * Requirements:
-     *
-     * - The contract must not be paused.
-     */
-    function _pause() internal virtual whenNotPaused {
-        _paused = true;
-        emit Paused(_msgSender());
-    }
-
-    /**
-     * @dev Returns to normal state.
-     *
-     * Requirements:
-     *
-     * - The contract must be paused.
-     */
-    function _unpause() internal virtual whenPaused {
-        _paused = false;
-        emit Unpaused(_msgSender());
-    }
-}
-
+ 
 pragma solidity ^0.8.0;
 
 /**
@@ -617,19 +531,13 @@ library SafeERC20 {
 
 pragma solidity ^0.8.0;
 
-contract SMCPresale is Ownable, Pausable, ReentrancyGuard {
+contract SMCPresale is Ownable, ReentrancyGuard {
     using SafeERC20 for IERC20;
-    address public adminAddress; // address of the admin
     uint256 public totalSupply;
     IERC20 public token;
-    constructor() {
 
-      //  token = IERC20;
+    event WithDrawUSDx(address indexed token, uint256 amount ,address indexed Owner);
 
-    }
-
-
-    
 
     mapping(address => uint256) public balances;
 /**
@@ -638,32 +546,11 @@ contract SMCPresale is Ownable, Pausable, ReentrancyGuard {
      * @param _amount: token amount
      * @dev Callable by owner
      */
-    function recoverToken(address _token, uint256 _amount) external onlyOwner {
-        IERC20(_token).safeTransfer(address(msg.sender), _amount);
 
-       // emit TokenRecovery(_token, _amount);
-    }
 
-    /**
-     * @notice Set admin address
-     * @dev Callable by owner
-     */
-    function setAdmin(address _adminAddress) external onlyOwner {
-        require(_adminAddress != address(0), "Cannot be zero address");
-        adminAddress = _adminAddress;
-
-       // emit NewAdminAddress(_adminAddress);
-    }
-
-    function stake(address _token, uint256 amount) external
-    {
-        require(amount > 0, "Cannot stake 0");
-        totalSupply += amount;
-        balances[msg.sender] += amount;
-        // Before this you should have approved the amount 
-        // This will transfer the amount of  _token from caller to contract
-        IERC20(_token).transferFrom(msg.sender, address(this), amount);
-        //emit Staked(msg.sender, amount);
+    function withDrawUSDx(address _token, uint256 _amount) external onlyOwner nonReentrant {
+        IERC20(_token).safeTransfer(address(msg.sender), _amount*10**18);
+       emit WithDrawUSDx(_token, _amount*10**18, msg.sender);
     }
 
 
