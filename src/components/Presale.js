@@ -6,6 +6,9 @@ import Select from 'react-select'
 import Backdrop from '@mui/material/Backdrop'
 import CircularProgress from '@mui/material/CircularProgress'
 
+const USDTAddress = '0xD9BA894E0097f8cC2BBc9D24D308b98e36dc6D02'
+const USDCAddress = '0x01BE23585060835E02B77ef475b0Cc51aA1e0709'
+
 function Loader() {
     return (
         <button
@@ -60,7 +63,7 @@ function Presale({ contractAddress }) {
     const [ustdBalance, setUsdtBalance] = useState(0)
     const [open, setOpen] = useState(false)
     const [focusedInput, setFocus] = useState(null)
-    const [coin, setCoin] = useState('usdt')
+    const [coin, setCoin] = useState(USDTAddress)
 
     useEffect(() => {
         if (focusedInput == 'coin') {
@@ -70,8 +73,12 @@ function Presale({ contractAddress }) {
         }
         console.log('coin:', coin)
 
-        return () => {}
+        return () => {
+            setUsdt(0)
+            setSmc(0)
+        }
     }, [smc, usdt, focusedInput, coin])
+
     const handleClose = () => {
         setOpen(false)
     }
@@ -83,12 +90,7 @@ function Presale({ contractAddress }) {
     let tempSigner = provider.getSigner()
     let abi = require('../abi/IERC20')
     const smcContract = contractAddress
-    const tokenContractAddress = '0xD9BA894E0097f8cC2BBc9D24D308b98e36dc6D02'
-    const tokenContract = new ethers.Contract(
-        tokenContractAddress,
-        abi,
-        tempSigner
-    )
+    const tokenContract = new ethers.Contract(coin, abi, tempSigner)
 
     window.ethereum.on('accountsChanged', function (accounts) {
         getCurrentAccount()
@@ -175,6 +177,15 @@ function Presale({ contractAddress }) {
         },
     ]
 
+    function onSelect(optionSelected) {
+        console.log('optionSelected.value', optionSelected.value)
+        if (optionSelected.value == 'usdt') {
+            setCoin(USDTAddress)
+        } else if (optionSelected.value == 'usdc') {
+            setCoin(USDCAddress)
+        }
+        //getUserBalance()
+    }
     return (
         <div className="flex flex-col justifyitem-center items-center">
             <div className="w-2/5 p-5 flex flex-col justifyitem-center items-center drop-shadow-lg rounded-3xl text-black bg-gray-900">
@@ -188,7 +199,7 @@ function Presale({ contractAddress }) {
                             defaultValue={options[0]}
                             options={options}
                             className="w-1/3 my-5 m-2"
-                            onChange={() => setCoin('xx')}
+                            onChange={onSelect}
                         />
                         <input
                             placeholder="USDT"
