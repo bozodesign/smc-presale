@@ -537,30 +537,44 @@ contract SmcPool is Ownable, ReentrancyGuard{
     event NewOperatorAddress(address operator);
     event ClaimToken(address indexed sender, uint256 amount);
 
-    /**
-     * @dev Using 2 dimensions array Address[0] => unlock Block
-     *                               Address[1] => unlock amount
-     * 
-     */    
-    mapping(address => mapping(uint8 => uint256)) public ledgers;
+
+    struct AmountLock {
+        uint256 unlockTime;
+        uint256 amount;
+    }
+  
+    mapping(address => AmountLock[] ) public ledgers;
 
 
     constructor(address _tokensAddress){
         adminAddress = msg.sender;
         tokensAddress = _tokensAddress;
     }
+    
 
     function AddLedger(address _address,uint256 _amount, uint256 _unlockDate) public onlyAdminOrOperator {
-        ledgers[_address][0] = _unlockDate;
-        ledgers[_address][1] = ledgers[_address][1].add(_amount*10**18);
+        ledgers[_address].push(AmountLock(_unlockDate,_amount*10**18));
     }
 
-    function checkClaimAbleTokens() external view returns (uint256){
-        if(ledgers[msg.sender][0] >= block.number){
-            return ledgers[msg.sender][1]/10**18; 
-        }
-        return 0;
+    function ledgerLength() external view returns (uint){
+        return ledgers[msg.sender].length;
     }
+
+    function checkClaimAbleTokens() external view returns  (uint256){
+        uint256 claimable;
+        for(uint i = 0; i < ledgers[msg.sender].length ; i++){
+            AmountLock memory acc = ledgers[msg.sender][i];
+            if (acc.unlockTime <= block.timestamp){
+                claimable = claimable + acc.amount;
+            }
+        }
+
+        return claimable;
+    }
+
+//    function checkLockTime() external view returns (uint256){
+//         return ;
+//     }
 
 
     function getBlockTimeStamp() external view returns (uint256){
@@ -568,14 +582,15 @@ contract SmcPool is Ownable, ReentrancyGuard{
     }
 
 
-    function claimToken(uint256 _amount) external nonReentrant {
-        require((ledgers[msg.sender][0] <= block.number), "When the time comes, it will be yours.");
-        require(( _amount <= ledgers[msg.sender][1] ), "Come on, you don't have that much!");
+//     function claimToken(uint256 _amount) external nonReentrant {
+//         require((ledgers[msg.sender][0] <= block.number), "When the time comes, it will be yours.");
+//         require(( _amount <= ledgers[msg.sender][1] ), "Come on, you don't have that much!");
+//         ledgers[msg.sender][1].sub(_amount);
 
-        IERC20(tokensAddress).transfer(address(msg.sender), _amount*10**18);
+//         IERC20(tokensAddress).transfer(address(msg.sender), _amount*10**18);
 
-        emit ClaimToken(msg.sender, _amount);
-    }
+//         emit ClaimToken(msg.sender, _amount);
+//     }
 
     
     modifier onlyAdmin() {
