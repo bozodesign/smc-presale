@@ -199,7 +199,7 @@ function Presale({ contractAddress }) {
                             value={usdt}
                             autoComplete="off"
                             onFocus={() => setFocus('usd')}
-                            onChange={setUsdt}
+                            onChange={(e) => setUsdt(e.target.value)}
                             className="my-2 w-2/5 active:outline-none rounded-sm p-2 outline-non bg-transparent text-slate-500 border-none text-3xl font-bold focus:outline-none"
                         />
                     </div>
