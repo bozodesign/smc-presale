@@ -1,7 +1,7 @@
 import { Navbar, Presale, TxList } from './components'
 
 function App() {
-    const contractAddress = '0xcc74baf861695cc8984410c6b2dba929d782936f'
+    const contractAddress = '0xa86dbece45355c9e7e43fd0a96f1ed78af78aeb6'
     return (
         <div className="App bg-gray-800 h-max p-5">
             <Navbar />

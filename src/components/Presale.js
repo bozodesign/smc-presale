@@ -121,7 +121,7 @@ function Presale({ contractAddress }) {
                 handleClose()
             })
 
-        setInfo('Wait for a confirmation')
+        setInfo('Please wait for a block confirmation')
 
         const receipt = await tx
             .wait(1)
