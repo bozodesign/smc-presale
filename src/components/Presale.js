@@ -1,7 +1,8 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { FaAngleDoubleDown } from 'react-icons/fa'
 import { BiLoaderAlt } from 'react-icons/bi'
 import { ethers } from 'ethers'
+import Select from 'react-select'
 import Backdrop from '@mui/material/Backdrop'
 import CircularProgress from '@mui/material/CircularProgress'
 
@@ -52,12 +53,25 @@ const changeNetwork = async ({ networkName, setError }) => {
 
 function Presale({ contractAddress }) {
     const [smc, setSmc] = useState(0)
-    const [usdt, setUsdt] = useState(1)
+    const [usdt, setUsdt] = useState(400)
     const [isProcess, setIsProcess] = useState(false)
     const [error, setError] = useState()
     const [info, setInfo] = useState()
     const [ustdBalance, setUsdtBalance] = useState(0)
     const [open, setOpen] = useState(false)
+    const [focusedInput, setFocus] = useState(null)
+    const [coin, setCoin] = useState('usdt')
+
+    useEffect(() => {
+        if (focusedInput == 'coin') {
+            setUsdt(smc * 0.02)
+        } else if (focusedInput == 'usd') {
+            setSmc(usdt / 0.02)
+        }
+        console.log('coin:', coin)
+
+        return () => {}
+    }, [smc, usdt, focusedInput, coin])
     const handleClose = () => {
         setOpen(false)
     }
@@ -89,14 +103,6 @@ function Presale({ contractAddress }) {
         await changeNetwork({ networkName, setError })
     }
 
-    const handleChange = (e) => {
-        setSmc(e)
-    }
-
-    const handleChangeSMC = (e) => {
-        setUsdt(e * 2)
-    }
-
     async function getCurrentAccount() {
         const accounts = await ethereum.request({ method: 'eth_accounts' })
         console.log('accounts[0]:', accounts[0])
@@ -111,12 +117,12 @@ function Presale({ contractAddress }) {
     }
 
     async function buy(smc) {
-        document.getElementById('usdt').setAttribute('disabled', 'disabled')
+        //document.getElementById('usdt').setAttribute('disabled', 'disabled')
         const tx = await tokenContract
             .transfer(smcContract, ethers.utils.parseUnits(smc, 18))
             .catch((error) => {
                 setIsProcess(false)
-                document.getElementById('usdt').removeAttribute('disabled')
+                //document.getElementById('usdt').removeAttribute('disabled')
                 setError('Payment error, please check your wallet balance')
                 handleClose()
             })
@@ -136,7 +142,7 @@ function Presale({ contractAddress }) {
                 getUserBalance()
                 setIsProcess(false)
                 setUsdtBalance(ustdBalance - smc)
-                document.getElementById('usdt').removeAttribute('disabled')
+                //document.getElementById('usdt').removeAttribute('disabled')
 
                 handleClose()
                 setInfo('')
@@ -145,10 +151,29 @@ function Presale({ contractAddress }) {
                 console.log('error code:', error.code)
                 console.error(error)
                 setIsProcess(false)
-                document.getElementById('usdt').removeAttribute('disabled')
+                //document.getElementById('usdt').removeAttribute('disabled')
                 handleClose()
             })
     }
+
+    const options = [
+        {
+            value: 'usdt',
+            label: (
+                <div className="flex flex-row text-sm font-bold justify-between items-center">
+                    <img src="http://smc.alotof.fun/img/coins/usdt.png" /> USDT
+                </div>
+            ),
+        },
+        {
+            value: 'usdc',
+            label: (
+                <div className="flex flex-row text-sm font-bold justify-between items-center">
+                    <img src="http://smc.alotof.fun/img/coins/usdc.png" /> USDC
+                </div>
+            ),
+        },
+    ]
 
     return (
         <div className="flex flex-col justifyitem-center items-center">
@@ -159,22 +184,29 @@ function Presale({ contractAddress }) {
                         <p className="text-slate-500 text-xs p-3"></p>
                     </div>
                     <div className=" w-full flex justify-between">
-                        <p className="p-3 text-lg text-slate-500">USDT</p>
+                        <Select
+                            defaultValue={options[0]}
+                            options={options}
+                            className="w-1/3 my-5 m-2"
+                            onChange={() => setCoin('xx')}
+                        />
                         <input
-                            name="message"
                             placeholder="USDT"
-                            id="usdt"
                             type="number"
-                            step="1"
-                            min="1"
-                            autocomplete="off"
-                            onChange={(e) => handleChange(e.target.value)}
-                            onFocus={}
+                            min="400"
+                            id="usdt"
+                            keyboardtype="decimal-pad"
+                            value={usdt}
+                            autoComplete="off"
+                            onFocus={() => setFocus('usd')}
+                            onChange={setUsdt}
                             className="my-2 w-2/5 active:outline-none rounded-sm p-2 outline-non bg-transparent text-slate-500 border-none text-3xl font-bold focus:outline-none"
                         />
                     </div>
+
                     <div className=" w-full flex justify-between my-0">
-                        <p className="text-slate-500 text-sm p-3">Balance </p>{' '}
+                        <p className="text-slate-500 text-sm p-3">Balance </p>
+
                         <p className="text-slate-500 text-sm p-3">
                             ${ustdBalance}
                         </p>
@@ -191,15 +223,16 @@ function Presale({ contractAddress }) {
                     <div className=" w-full flex justify-between">
                         <p className="p-3 text-lg text-slate-500">SMC</p>
                         <input
-                            disabled
-                            name="message"
                             placeholder="SMC"
-                            id="usdt"
-                            type="text"
-                            min="0"
-                            value={smc * 50}
-                            onChange={(e) => e.target.value}
-                            className="my-2 w-2/5 active:outline-non rounded-sm p-2 outline-non bg-transparent text-slate-500 border-none text-3xl font-bold"
+                            type="number"
+                            id="smc"
+                            value={smc}
+                            step="50"
+                            min="20000"
+                            keyboardtype="decimal-pad"
+                            onFocus={() => setFocus('coin')}
+                            onChange={(e) => setSmc(e.target.value)}
+                            className="my-2 w-2/5 active:outline-none rounded-sm p-2 outline-non bg-transparent text-slate-500 border-none text-3xl font-bold focus:outline-none"
                         />
                     </div>
                 </div>
