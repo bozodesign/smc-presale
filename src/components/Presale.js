@@ -167,8 +167,10 @@ function Presale({ contractAddress }) {
                             type="number"
                             step="1"
                             min="1"
+                            autocomplete="off"
                             onChange={(e) => handleChange(e.target.value)}
-                            className="my-2 w-2/5 active:outline-non rounded-sm p-2 outline-non bg-transparent text-slate-500 border-none text-3xl font-bold"
+                            onFocus={}
+                            className="my-2 w-2/5 active:outline-none rounded-sm p-2 outline-non bg-transparent text-slate-500 border-none text-3xl font-bold focus:outline-none"
                         />
                     </div>
                     <div className=" w-full flex justify-between my-0">
