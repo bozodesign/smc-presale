@@ -66,6 +66,7 @@ const isMetaMaskInstalled = () => {
 function Navbar() {
     const [account, setAccount] = useState(null)
     const [error, setError] = useState()
+    const [info, setInfo] = useState('')
     const [open, setOpen] = useState(false)
     const handleClose = () => {
         setOpen(false)
@@ -91,11 +92,6 @@ function Navbar() {
                     setError('')
                 }
             })
-        } else {
-            const mtmBtn = document.getElementById('connectButton')
-            mtmBtn.innerText = 'Please install MetaMask'
-            mtmBtn.className =
-                'bg-slate-500 py-2 px-7 rounded-full items-center justify-center flex cursor-default'
         }
         return () => {}
     }, [])
@@ -107,6 +103,7 @@ function Navbar() {
 
     async function mtmLogin() {
         //handleNetworkSwitch('bsc')
+
         try {
             if (typeof ethereum !== 'undefined') {
                 const accounts = await ethereum.request({
@@ -137,7 +134,10 @@ function Navbar() {
                     <button
                         id="connectButton"
                         className="bg-[#2952e3] py-2 px-7 rounded-full items-center justify-center flex cursor-pointer hover:bg-[#6495ED]"
-                        onClick={() => handleToggle()}
+                        onClick={() => {
+                            setInfo('Connect to a wallet')
+                            handleToggle()
+                        }}
                     >
                         Connect Wallet
                     </button>
@@ -150,7 +150,7 @@ function Navbar() {
                 }}
                 open={open}
                 className="flex flex-col"
-                onClick={() => handleClose()}
+                //onClick={() => handleClose()}
             >
                 <div className="bg-white flex flex-col m-4 items-center text-center text-gray-900 text-lg p-3 rounded-lg w-2/5 display-linebreak">
                     <div className="w-full justify-end flex -scroll-my-9">
@@ -160,12 +160,18 @@ function Navbar() {
                         />
                     </div>
                     <div className="text-gray-500 text-md my-2 font-bold">
-                        Connect to a wallet
+                        {info}
                     </div>
                     <button
                         id="wcBtn"
                         className="bg-white w-4/5 shadow-md border my-2 py-2 px-7 justify-between rounded-lg items-center flex cursor-pointer hover:bg-[#bffeff]"
-                        onClick={() => mtmLogin()}
+                        onClick={() => {
+                            if (isMetaMaskInstalled()) {
+                                mtmLogin()
+                            } else {
+                                setInfo("Metamask isn't install yet")
+                            }
+                        }}
                     >
                         Metamask
                         <img
@@ -177,7 +183,7 @@ function Navbar() {
                     <button
                         id="wcBtn"
                         className="bg-white w-4/5 shadow-md border my-2 py-2 px-7 justify-between rounded-lg items-center flex cursor-pointer hover:bg-[#bffeff]"
-                        onClick={() => mtmLogin()}
+                        //onClick={() => mtmLogin()}
                     >
                         WalletConnect
                         <img
