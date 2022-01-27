@@ -152,7 +152,7 @@ function Navbar() {
                 className="flex flex-col"
                 //onClick={() => handleClose()}
             >
-                <div className="bg-white flex flex-col m-4 items-center text-center text-gray-900 text-lg p-3 rounded-lg w-2/5 display-linebreak">
+                <div className="bg-white flex flex-col m-4 items-center text-center text-gray-900 text-lg p-3 rounded-lg md:w-2/5 w-full display-linebreak">
                     <div className="w-full justify-end flex -scroll-my-9">
                         <AiOutlineClose
                             className="cursor-pointer"

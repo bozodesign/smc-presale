@@ -187,7 +187,7 @@ function Presale({ contractAddress }) {
 
     return (
         <div className="flex flex-col justifyitem-center items-center">
-            <div className="w-2/5 p-5 flex flex-col justifyitem-center items-center drop-shadow-lg rounded-3xl text-black bg-gray-900">
+            <div className="md:w-2/5 w-full p-5 flex flex-col justifyitem-center items-center drop-shadow-lg rounded-3xl text-black bg-gray-900">
                 <div className="rounded-2xl border border-[#3d4f7c] w-full">
                     <div className=" w-full flex justify-between my-0">
                         <span className="text-slate-500 text-xs p-3">From</span>{' '}
