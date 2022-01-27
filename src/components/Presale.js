@@ -277,7 +277,7 @@ function Presale({ contractAddress }) {
                                 handleToggle()
                                 setIsProcess(true)
                                 setError('')
-                                buy(usdt)
+                                buy(usdt.toString())
                             }
                         }}
                         className="text-white w-full mt-2 border-[1px] p-2 border-[#3d4f7c] rounded-full cursor-pointer hover:bg-[#A9A9A9]"
