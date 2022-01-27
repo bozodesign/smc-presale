@@ -200,7 +200,8 @@ function Presale({ contractAddress }) {
                         />
                         <input
                             placeholder="USDT"
-                            type="number"
+                            type="text"
+                            pattern="[0-9]*"
                             min="400"
                             step="1"
                             id="usdt"
@@ -208,7 +209,15 @@ function Presale({ contractAddress }) {
                             value={usdt}
                             autoComplete="off"
                             onFocus={() => setFocus('usd')}
-                            onChange={(e) => setUsdt(e.target.value)}
+                            onChange={(e) => {
+                                const re = /^[0-9\b]+$/
+                                if (
+                                    e.target.value === '' ||
+                                    re.test(e.target.value)
+                                ) {
+                                    setUsdt(e.target.value)
+                                }
+                            }}
                             className="my-2 w-2/5 active:outline-none rounded-sm p-2 outline-non bg-transparent text-slate-500 border-none text-3xl font-bold focus:outline-none"
                         />
                     </div>
@@ -233,14 +242,22 @@ function Presale({ contractAddress }) {
                         <p className="p-3 text-lg text-slate-500">SMC</p>
                         <input
                             placeholder="SMC"
-                            type="number"
+                            type="text"
                             id="smc"
                             value={smc}
                             step="50"
                             min="20000"
                             keyboardtype="decimal-pad"
                             onFocus={() => setFocus('coin')}
-                            onChange={(e) => setSmc(e.target.value)}
+                            onChange={(e) => {
+                                const re = /^[0-9\b]+$/
+                                if (
+                                    e.target.value === '' ||
+                                    re.test(e.target.value)
+                                ) {
+                                    setSmc(e.target.value)
+                                }
+                            }}
                             className="my-2 w-2/5 active:outline-none rounded-sm p-2 outline-non bg-transparent text-slate-500 border-none text-3xl font-bold focus:outline-none"
                         />
                     </div>
