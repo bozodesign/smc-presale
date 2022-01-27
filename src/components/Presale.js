@@ -55,7 +55,7 @@ const changeNetwork = async ({ networkName, setError }) => {
 }
 
 function Presale({ contractAddress }) {
-    const [smc, setSmc] = useState(0)
+    const [smc, setSmc] = useState(20000)
     const [usdt, setUsdt] = useState(400)
     const [isProcess, setIsProcess] = useState(false)
     const [error, setError] = useState()
@@ -73,11 +73,8 @@ function Presale({ contractAddress }) {
         }
         console.log('coin:', coin)
 
-        return () => {
-            setUsdt(0)
-            setSmc(0)
-        }
-    }, [smc, usdt, focusedInput, coin])
+        return () => {}
+    }, [smc, usdt, focusedInput])
 
     const handleClose = () => {
         setOpen(false)
@@ -184,7 +181,7 @@ function Presale({ contractAddress }) {
         } else if (optionSelected.value == 'usdc') {
             setCoin(USDCAddress)
         }
-        //getUserBalance()
+        getUserBalance()
     }
     return (
         <div className="flex flex-col justifyitem-center items-center">
@@ -254,7 +251,7 @@ function Presale({ contractAddress }) {
                     <button
                         type="button"
                         onClick={() => {
-                            if (smc < 5) {
+                            if (usdt < 5) {
                                 setError('$400 Minimum Purchase required')
                             } else {
                                 setInfo(
@@ -263,7 +260,7 @@ function Presale({ contractAddress }) {
                                 handleToggle()
                                 setIsProcess(true)
                                 setError('')
-                                buy(smc)
+                                buy(usdt)
                             }
                         }}
                         className="text-white w-full mt-2 border-[1px] p-2 border-[#3d4f7c] rounded-full cursor-pointer hover:bg-[#A9A9A9]"

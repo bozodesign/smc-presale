@@ -44,7 +44,7 @@ export default function TxList({ contractAddress }) {
     if (tx.status) {
         const txFilted = tx.result.filter((x) => {
             return (
-                (x.tokenSymbol === 'USDT' || x.tokenSymbol === 'USDC') &&
+                (x.tokenSymbol === 'USDT' || x.tokenSymbol === 'LINK') &&
                 x.value / 10 ** x.tokenDecimal >= 1 &&
                 x.to.toUpperCase() == contractAddress.toUpperCase()
             )
