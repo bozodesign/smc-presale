@@ -10,12 +10,17 @@
         "@testing-library/jest-dom": "^5.16.1",
         "@testing-library/react": "^12.1.2",
         "@testing-library/user-event": "^13.5.0",
+        "@walletconnect/web3-provider": "^1.7.1",
         "animated-number-react": "^0.1.2",
+        "array.prototype.fill": "^1.0.2",
+        "core-js": "^3.20.3",
         "ethers": "^5.5.3",
         "javascript-time-ago": "^2.3.10",
         "js-ago": "^2.0.1",
         "mathjs": "^10.1.0",
         "react": "^17.0.2",
+        "react-app-polyfill": "^3.0.0",
+        "react-app-rewired": "^2.1.11",
         "react-content-loader": "^6.1.0",
         "react-dom": "^17.0.2",
         "react-icons": "^4.3.1",
@@ -23,10 +28,12 @@
         "react-select": "^5.2.2",
         "react-sweet-progress": "^1.1.2",
         "react-time-ago": "^7.1.7",
-        "web-vitals": "^2.1.4"
+        "stream-browserify": "^3.0.0",
+        "web-vitals": "^2.1.4",
+        "web3": "^1.7.0"
     },
     "scripts": {
-        "start": "react-scripts start",
+        "start": "react-app-rewired start",
         "build": "react-scripts build",
         "test": "react-scripts test",
         "eject": "react-scripts eject"

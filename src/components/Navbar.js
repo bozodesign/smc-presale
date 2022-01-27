@@ -1,7 +1,16 @@
 import { useState, useEffect } from 'react'
 import Backdrop from '@mui/material/Backdrop'
-import CircularProgress from '@mui/material/CircularProgress'
+import WalletConnectProvider from '@walletconnect/web3-provider'
 import { AiOutlineClose } from 'react-icons/ai'
+import { providers } from 'ethers'
+//  Create WalletConnect Provider
+// const provider = new WalletConnectProvider({
+//     infuraId: '27e484dcd9e3efcfd25a83a78777cdf1',
+// })
+
+// //  Enable session (triggers QR Code modal)
+// await provider.enable()
+// const web3Provider = new providers.Web3Provider(provider)
 const networks = {
     // polygon: {
     //   chainId: `0x${Number(137).toString(16)}`,
