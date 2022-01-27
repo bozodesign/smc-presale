@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
-import { HiMenuAlt4 } from 'react-icons/hi'
+import Backdrop from '@mui/material/Backdrop'
+import CircularProgress from '@mui/material/CircularProgress'
 import { AiOutlineClose } from 'react-icons/ai'
-
 const networks = {
     // polygon: {
     //   chainId: `0x${Number(137).toString(16)}`,
@@ -66,10 +66,15 @@ const isMetaMaskInstalled = () => {
 function Navbar() {
     const [account, setAccount] = useState(null)
     const [error, setError] = useState()
+    const [open, setOpen] = useState(false)
+    const handleClose = () => {
+        setOpen(false)
+    }
+    const handleToggle = () => {
+        setOpen(!open)
+    }
     let chain
     const ethereum = window.ethereum
-    //initialize()
-
     useEffect(() => {
         if (isMetaMaskInstalled()) {
             getCurrentAccount()
@@ -132,12 +137,63 @@ function Navbar() {
                     <button
                         id="connectButton"
                         className="bg-[#2952e3] py-2 px-7 rounded-full items-center justify-center flex cursor-pointer hover:bg-[#6495ED]"
-                        onClick={() => mtmLogin()}
+                        onClick={() => handleToggle()}
                     >
-                        Connect with Metamask
+                        Connect Wallet
                     </button>
                 </ul>
             )}
+            <Backdrop
+                sx={{
+                    color: '#fff',
+                    zIndex: (theme) => theme.zIndex.drawer + 1,
+                }}
+                open={open}
+                className="flex flex-col"
+                onClick={() => handleClose()}
+            >
+                <div className="bg-white flex flex-col m-4 items-center text-center text-gray-900 text-lg p-3 rounded-lg w-2/5 display-linebreak">
+                    <div className="w-full justify-end flex -scroll-my-9">
+                        <AiOutlineClose
+                            className="cursor-pointer"
+                            onClick={() => handleClose()}
+                        />
+                    </div>
+                    <div className="text-gray-500 text-md my-2 font-bold">
+                        Connect to a wallet
+                    </div>
+                    <button
+                        id="wcBtn"
+                        className="bg-white w-4/5 shadow-md border my-2 py-2 px-7 justify-between rounded-lg items-center flex cursor-pointer hover:bg-[#bffeff]"
+                        onClick={() => mtmLogin()}
+                    >
+                        Metamask
+                        <img
+                            src="http://smc.alotof.fun/img/metamask.png"
+                            width="24"
+                        />
+                    </button>
+
+                    <button
+                        id="wcBtn"
+                        className="bg-white w-4/5 shadow-md border my-2 py-2 px-7 justify-between rounded-lg items-center flex cursor-pointer hover:bg-[#bffeff]"
+                        onClick={() => mtmLogin()}
+                    >
+                        WalletConnect
+                        <img
+                            src="http://smc.alotof.fun/img/walletConnectIcon.svg"
+                            width="24"
+                        />
+                    </button>
+                    <div className="text-gray-500 text-xs my-2">
+                        By connecting your wallet, you agree to our
+                        <br />
+                        <a href="#"> Term of Service</a> and
+                        <a href="#"> Privacy Policy</a>
+                    </div>
+                </div>
+                <br />
+            </Backdrop>
         </nav>
     )
 }
