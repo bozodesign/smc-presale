@@ -57,10 +57,6 @@ const changeNetwork = async ({ networkName, setError }) => {
     }
 }
 
-const NavBarItems = ({ title, classProps }) => {
-    return <li className={`mx-4 cursor-pointer ${classProps}`}>{title}</li>
-}
-
 function Navbar() {
     const [account, setAccount] = useState(null)
     const [error, setError] = useState()
@@ -120,12 +116,13 @@ function Navbar() {
                 </p>
             ) : (
                 <ul className="text-white md:flex  list-none flex-row justify-between items-center">
-                    <li
+                    <button
+                        id="connectButton"
                         className="bg-[#2952e3] py-2 px-7 rounded-full items-center justify-center flex cursor-pointer hover:bg-[#6495ED]"
                         onClick={() => mtmLogin()}
                     >
                         Connect with Metamask
-                    </li>
+                    </button>
                 </ul>
             )}
         </nav>

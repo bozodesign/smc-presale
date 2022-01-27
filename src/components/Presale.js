@@ -16,7 +16,7 @@ function Loader() {
             className="text-white w-full mt-2 border-[1px] p-2 border-[#3d4f7c] rounded-full cursor-pointer  cursor-not-allowed flex flex-row items-center justify-center"
         >
             <BiLoaderAlt className="animate-spin mr-2" />
-            <p className="animate-pulse">Processing... </p>
+            <span className="animate-pulse">Processing... </span>
         </button>
     )
 }
@@ -188,8 +188,8 @@ function Presale({ contractAddress }) {
             <div className="w-2/5 p-5 flex flex-col justifyitem-center items-center drop-shadow-lg rounded-3xl text-black bg-gray-900">
                 <div className="rounded-2xl border border-[#3d4f7c] w-full">
                     <div className=" w-full flex justify-between my-0">
-                        <p className="text-slate-500 text-xs p-3">From</p>{' '}
-                        <p className="text-slate-500 text-xs p-3"></p>
+                        <span className="text-slate-500 text-xs p-3">From</span>{' '}
+                        <span className="text-slate-500 text-xs p-3"></span>
                     </div>
                     <div className=" w-full flex justify-between">
                         <Select
@@ -223,11 +223,13 @@ function Presale({ contractAddress }) {
                     </div>
 
                     <div className=" w-full flex justify-between my-0">
-                        <p className="text-slate-500 text-sm p-3">Balance </p>
+                        <span className="text-slate-500 text-sm p-3">
+                            Balance{' '}
+                        </span>
 
-                        <p className="text-slate-500 text-sm p-3">
+                        <span className="text-slate-500 text-sm p-3">
                             ${ustdBalance}
-                        </p>
+                        </span>
                     </div>
                 </div>
 
@@ -235,11 +237,11 @@ function Presale({ contractAddress }) {
 
                 <div className="rounded-2xl border border-[#3d4f7c] w-full">
                     <div className=" w-full flex justify-between my-0">
-                        <p className="text-slate-500 text-xs p-3">To</p>{' '}
-                        <p className="text-slate-500 text-xs p-3"></p>
+                        <span className="text-slate-500 text-xs p-3">To</span>{' '}
+                        <span className="text-slate-500 text-xs p-3"></span>
                     </div>
                     <div className=" w-full flex justify-between">
-                        <p className="p-3 text-lg text-slate-500">SMC</p>
+                        <span className="p-3 text-lg text-slate-500">SMC</span>
                         <input
                             placeholder="SMC"
                             type="text"
@@ -285,7 +287,9 @@ function Presale({ contractAddress }) {
                         Book Now
                     </button>
                 )}
-                <p className="text-red-600 font-bold text-sm my-1">{error}</p>
+                <span className="text-red-600 font-bold text-sm my-1">
+                    {error}
+                </span>
             </div>
             <Backdrop
                 sx={{

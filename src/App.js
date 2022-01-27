@@ -5,8 +5,8 @@ function App() {
     return (
         <div className="App bg-gray-800 h-max p-5">
             <Navbar />
-            <Presale contractAddress={contractAddress} />
-            <TxList contractAddress={contractAddress} />
+            {/* <Presale contractAddress={contractAddress} /> */}
+            {/* <TxList contractAddress={contractAddress} /> */}
         </div>
     )
 }

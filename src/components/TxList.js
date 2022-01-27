@@ -58,7 +58,7 @@ export default function TxList({ contractAddress }) {
 
         return (
             <div className="flex flex-col text-center">
-                <p className="text-4xl font-bold my-10 text-gray-400">
+                <span className="text-4xl font-bold my-10 text-gray-400">
                     <br />
                     <Progress
                         type="circle"
@@ -81,7 +81,7 @@ export default function TxList({ contractAddress }) {
                         duration="600"
                     />
                     K /28,000K SOLD!
-                </p>
+                </span>
 
                 <div className="flex flex-wrap-reverse flex-row text-left">
                     {txFilted.map((x) => (
@@ -89,20 +89,23 @@ export default function TxList({ contractAddress }) {
                             key={x.timeStamp}
                             className="text-gray-400 border rounded-2xl p-3 m-2 border-[#3d4f7c] shadow-lg w-80"
                         >
-                            <p className="text-xs">{x.from}</p>
-                            <p className="text-xl font-bold">
+                            <span className="text-xs">{x.from}</span>
+                            <br />
+                            <span className="text-xl font-bold">
                                 BUY SMC{' '}
                                 {separator(
                                     (x.value / 10 ** x.tokenDecimal) * 50
                                 )}{' '}
-                            </p>
-                            <p>
+                            </span>
+                            <br />
+                            <span>
                                 with {x.tokenSymbol}{' '}
                                 {separator(x.value / 10 ** x.tokenDecimal)}
-                            </p>
-                            <p className="text-xs">
+                            </span>
+                            <br />
+                            <span className="text-xs">
                                 {js_ago(x.timeStamp, { format: 'long' })}
-                            </p>
+                            </span>
                         </div>
                     ))}
                 </div>
@@ -111,9 +114,9 @@ export default function TxList({ contractAddress }) {
     } else {
         return (
             <div className="flex flex-col text-center">
-                <p className="text-4xl font-bold my-10 text-gray-400 animate-pulse">
+                <span className="text-4xl font-bold my-10 text-gray-400 animate-pulse">
                     SMC SOLD!
-                </p>
+                </span>
 
                 <div className="flex flex-wrap-reverse flex-row">
                     <div className="text-gray-400 border rounded-2xl p-3 m-2 border-[#3d4f7c] shadow-lg w-80 animate-pulse">
