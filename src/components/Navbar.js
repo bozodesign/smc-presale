@@ -57,28 +57,41 @@ const changeNetwork = async ({ networkName, setError }) => {
     }
 }
 
+const isMetaMaskInstalled = () => {
+    //Have to check the ethereum binding on the window object to see if it's installed
+    const { ethereum } = window
+    return Boolean(ethereum && ethereum.isMetaMask)
+}
+
 function Navbar() {
     const [account, setAccount] = useState(null)
     const [error, setError] = useState()
     let chain
     const ethereum = window.ethereum
+    //initialize()
 
     useEffect(() => {
-        getCurrentAccount()
+        if (isMetaMaskInstalled()) {
+            getCurrentAccount()
+            ethereum.on('accountsChanged', (accounts) => {
+                setAccount(accounts[0])
+            })
 
-        ethereum.on('accountsChanged', (accounts) => {
-            setAccount(accounts[0])
-        })
-
-        ethereum.on('chainChanged', (_chainId) => {
-            chain = _chainId
-            console.log('chainId:', chain)
-            if (chain !== '0x4') {
-                setError('Wrong Network!')
-            } else {
-                setError('')
-            }
-        })
+            ethereum.on('chainChanged', (_chainId) => {
+                chain = _chainId
+                console.log('chainId:', chain)
+                if (chain !== '0x4') {
+                    setError('Wrong Network!')
+                } else {
+                    setError('')
+                }
+            })
+        } else {
+            const mtmBtn = document.getElementById('connectButton')
+            mtmBtn.innerText = 'Please install MetaMask'
+            mtmBtn.className =
+                'bg-slate-500 py-2 px-7 rounded-full items-center justify-center flex cursor-default'
+        }
         return () => {}
     }, [])
 

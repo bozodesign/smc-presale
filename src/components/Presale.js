@@ -21,7 +21,7 @@ function Loader() {
     )
 }
 
-const contractAddress = '0xD92E713d051C37EbB2561803a3b5FBAbc4962431'
+//const contractAddress = '0xD92E713d051C37EbB2561803a3b5FBAbc4962431'
 const networks = {
     rinkeby: {
         chainId: `0x${Number(56).toString(16)}`,
@@ -82,6 +82,7 @@ function Presale({ contractAddress }) {
     const handleToggle = () => {
         setOpen(!open)
     }
+
     const ethereum = window.ethereum
     const provider = new ethers.providers.Web3Provider(ethereum)
     let tempSigner = provider.getSigner()
@@ -183,6 +184,7 @@ function Presale({ contractAddress }) {
         }
         getUserBalance()
     }
+
     return (
         <div className="flex flex-col justifyitem-center items-center">
             <div className="w-2/5 p-5 flex flex-col justifyitem-center items-center drop-shadow-lg rounded-3xl text-black bg-gray-900">
