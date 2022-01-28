@@ -92,39 +92,36 @@ function Presale({ contractAddress, walletConnect }) {
     let ethereum
     let tempSigner
 
-    if (isMetaMaskInstalled()) {
+    if (isMetaMaskInstalled() && !walletConnect) {
         ethereum = window.ethereum
         provider = new ethers.providers.Web3Provider(ethereum)
         tempSigner = provider.getSigner()
-
-        provider.on('accountsChanged', () => {
-            getCurrentAccount()
-            getUserBalance()
-        })
     } else if (walletConnect) {
-        console.log('WC!')
-        provider = new WalletConnectProvider({
-            infuraId: '06ba877b3d513b26464bc3384fb3e278',
+        console.log('WC!', walletConnect)
+        ethereum = new WalletConnectProvider({
+            //infuraId: '06ba877b3d513b26464bc3384fb3e278',
+            infuraId: '836dd9508e394e8ebb3d5983bb0d08f2',
         })
+        provider = new ethers.providers.Web3Provider(provider)
     }
 
     let abi = require('../abi/IERC20')
     const smcContract = contractAddress
     const tokenContract = new ethers.Contract(coin, abi, tempSigner)
 
+    async function getCurrentAccount() {
+        const accounts = await ethereum.request({ method: 'eth_accounts' })
+        console.log('accounts[0]:', accounts[0])
+        return accounts[0]
+    }
+
     getCurrentAccount()
-    //getCurrentAccountWC()
+
     getUserBalance()
 
     const handleNetworkSwitch = async (networkName) => {
         setError()
         await changeNetwork({ networkName, setError })
-    }
-
-    async function getCurrentAccount() {
-        const accounts = await ethereum.request({ method: 'eth_accounts' })
-        console.log('accounts[0]:', accounts[0])
-        return accounts[0]
     }
 
     async function getUserBalance() {
