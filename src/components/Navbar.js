@@ -165,7 +165,7 @@ function Navbar() {
                     </p>
                 </div>
             ) : (
-                <ul className="text-white md:flex  list-none flex-row justify-between items-center">
+                <div className="text-white md:flex  list-none flex-row justify-between items-center">
                     <button
                         id="connectButton"
                         className="bg-[#2952e3] py-2 px-7 rounded-full items-center justify-center flex cursor-pointer hover:bg-[#6495ED]"
@@ -176,16 +176,7 @@ function Navbar() {
                     >
                         Connect Wallet
                     </button>
-                    <button
-                        id="connectButton"
-                        className="bg-[#2952e3] py-2 px-7 rounded-full items-center justify-center flex cursor-pointer hover:bg-[#6495ED]"
-                        onClick={() => {
-                            getCurrentAccountWC()
-                        }}
-                    >
-                        Test
-                    </button>
-                </ul>
+                </div>
             )}
             <Backdrop
                 sx={{

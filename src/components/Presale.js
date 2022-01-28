@@ -5,9 +5,16 @@ import { ethers } from 'ethers'
 import Select from 'react-select'
 import Backdrop from '@mui/material/Backdrop'
 import CircularProgress from '@mui/material/CircularProgress'
+import WalletConnectProvider from '@walletconnect/web3-provider'
 
 const USDTAddress = '0xD9BA894E0097f8cC2BBc9D24D308b98e36dc6D02'
 const USDCAddress = '0x01BE23585060835E02B77ef475b0Cc51aA1e0709'
+
+const isMetaMaskInstalled = () => {
+    //Have to check the ethereum binding on the window object to see if it's installed
+    const { ethereum } = window
+    return Boolean(ethereum && ethereum.isMetaMask)
+}
 
 function Loader() {
     return (
@@ -71,7 +78,6 @@ function Presale({ contractAddress }) {
         } else if (focusedInput == 'usd') {
             setSmc(usdt / 0.02)
         }
-        console.log('coin:', coin)
 
         return () => {}
     }, [smc, usdt, focusedInput])
@@ -82,21 +88,30 @@ function Presale({ contractAddress }) {
     const handleToggle = () => {
         setOpen(!open)
     }
+    let provider
+    let ethereum
+    let tempSigner
 
-    const ethereum = window.ethereum
-    const provider = new ethers.providers.Web3Provider(ethereum)
-    let tempSigner = provider.getSigner()
+    if (isMetaMaskInstalled()) {
+        ethereum = window.ethereum
+        provider = new ethers.providers.Web3Provider(ethereum)
+        tempSigner = provider.getSigner()
+
+        provider.on('accountsChanged', () => {
+            getCurrentAccount()
+            getUserBalance()
+        })
+    }
+
     let abi = require('../abi/IERC20')
     const smcContract = contractAddress
     const tokenContract = new ethers.Contract(coin, abi, tempSigner)
 
-    window.ethereum.on('accountsChanged', function (accounts) {
-        getCurrentAccount()
-        getUserBalance()
-    })
+    //getCurrentAccount()
 
-    getCurrentAccount()
-    getUserBalance()
+    if (isMetaMaskInstalled()) {
+        getUserBalance()
+    }
 
     const handleNetworkSwitch = async (networkName) => {
         setError()
@@ -141,7 +156,7 @@ function Presale({ contractAddress }) {
                 setUsdt(0)
                 getUserBalance()
                 setIsProcess(false)
-                setUsdtBalance(ustdBalance - smc)
+                //setUsdtBalance(ustdBalance - smc)
                 //document.getElementById('usdt').removeAttribute('disabled')
 
                 handleClose()
