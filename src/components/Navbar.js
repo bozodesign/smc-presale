@@ -1,25 +1,10 @@
 import { useState, useEffect } from 'react'
 import Backdrop from '@mui/material/Backdrop'
 import { AiOutlineClose } from 'react-icons/ai'
-import { ethers } from 'ethers'
+import { ethers, providers } from 'ethers'
 import WalletConnectProvider from '@walletconnect/web3-provider'
 
-const provider = new WalletConnectProvider({
-    infuraId: '06ba877b3d513b26464bc3384fb3e278',
-})
-
 const networks = {
-    // polygon: {
-    //   chainId: `0x${Number(137).toString(16)}`,
-    //   chainName: "Polygon Mainnet",
-    //   nativeCurrency: {
-    //     name: "MATIC",
-    //     symbol: "MATIC",
-    //     decimals: 18
-    //   },
-    //   rpcUrls: ["https://polygon-rpc.com/"],
-    //   blockExplorerUrls: ["https://polygonscan.com/"]
-    // },
     bsc: {
         chainId: `0x${Number(56).toString(16)}`,
         chainName: 'Binance Smart Chain Mainnet',
@@ -52,6 +37,11 @@ const isMetaMaskInstalled = () => {
     const { ethereum } = window
     return Boolean(ethereum && ethereum.isMetaMask)
 }
+
+const provider = new WalletConnectProvider({
+    //infuraId: '06ba877b3d513b26464bc3384fb3e278',
+    infuraId: '836dd9508e394e8ebb3d5983bb0d08f2',
+})
 
 function Navbar() {
     const [account, setAccount] = useState(null)
@@ -101,32 +91,59 @@ function Navbar() {
             })
         }
         provider.on('disconnect', (code, reason) => {
+            console.log('DISCONNECTED!')
             console.log(code, reason)
             setAccount()
         })
+
         return () => {}
     }, [])
 
     async function getCurrentAccountWC() {
         const accounts = await provider.request({ method: 'eth_accounts' })
-        console.log('accounts[0]WC:', accounts[0])
         setAccount(accounts[0])
+        return accounts[0]
     }
+
+    provider.on('chainChanged', (_chainId) => {
+        chain = _chainId
+        console.log('chainId:', chain)
+        if (chain != '4') {
+            setError('Wrong Network!')
+        } else {
+            setError('')
+        }
+    })
+    const coin = '0xD9BA894E0097f8cC2BBc9D24D308b98e36dc6D02'
+    let abi = require('../abi/IERC20')
 
     async function walletConnectLogin() {
         try {
             await provider.enable()
+
             setWalledConnect(true)
         } catch (err) {
             console.log(err)
         }
-        getCurrentAccountWC()
+        console.log('accountsWC:', await getCurrentAccountWC())
+
+        await web3Provider
+            .getBalance(getCurrentAccountWC())
+            .then((x) => console.log(ethers.utils.formatUnits(x, 18)))
+
+        const tempSigner = web3Provider.getSigner()
+        const tokenContract = new ethers.Contract(coin, abi, tempSigner)
+        await tokenContract.balanceOf(getCurrentAccountWC()).then((x) => {
+            console.log('balance', (x / 10 ** 18).toFixed(2))
+        })
+
         handleClose()
     }
 
     async function getCurrentAccount() {
         const accounts = await ethereum.request({ method: 'eth_accounts' })
         setAccount(accounts[0])
+        return accounts[0]
     }
 
     async function mtmLogin() {
@@ -160,7 +177,21 @@ function Navbar() {
                             }}
                         />{' '}
                     </p>
-                    <p className="text-red-600 font-bold animate-pulse">
+                    <p className="text-red-600 font-bold animate-pulse flex flex-row">
+                        {/* <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            class="sc-m6ivbz-6 gWhSnL"
+                        >
+                            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                        </svg> */}
                         {error}
                     </p>
                 </div>
@@ -198,7 +229,7 @@ function Navbar() {
                         {info}
                     </div>
                     <button
-                        id="wcBtn"
+                        id="mtmBtn"
                         className="bg-white w-4/5 shadow-md border my-2 py-2 px-7 justify-between rounded-lg items-center flex cursor-pointer hover:bg-[#bffeff]"
                         onClick={() => {
                             if (isMetaMaskInstalled()) {

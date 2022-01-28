@@ -101,17 +101,19 @@ function Presale({ contractAddress }) {
             getCurrentAccount()
             getUserBalance()
         })
+    } else if (0) {
+        provider = new WalletConnectProvider({
+            infuraId: '06ba877b3d513b26464bc3384fb3e278',
+        })
     }
 
     let abi = require('../abi/IERC20')
     const smcContract = contractAddress
     const tokenContract = new ethers.Contract(coin, abi, tempSigner)
 
-    //getCurrentAccount()
-
-    if (isMetaMaskInstalled()) {
-        getUserBalance()
-    }
+    getCurrentAccount()
+    //getCurrentAccountWC()
+    getUserBalance()
 
     const handleNetworkSwitch = async (networkName) => {
         setError()
