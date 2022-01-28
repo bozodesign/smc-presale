@@ -1,16 +1,13 @@
 import { useState, useEffect } from 'react'
 import Backdrop from '@mui/material/Backdrop'
-import WalletConnectProvider from '@walletconnect/web3-provider'
 import { AiOutlineClose } from 'react-icons/ai'
-import { providers } from 'ethers'
-//  Create WalletConnect Provider
-// const provider = new WalletConnectProvider({
-//     infuraId: '27e484dcd9e3efcfd25a83a78777cdf1',
-// })
+import { ethers } from 'ethers'
+import WalletConnectProvider from '@walletconnect/web3-provider'
 
-// //  Enable session (triggers QR Code modal)
-// await provider.enable()
-// const web3Provider = new providers.Web3Provider(provider)
+const provider = new WalletConnectProvider({
+    infuraId: '06ba877b3d513b26464bc3384fb3e278',
+})
+
 const networks = {
     // polygon: {
     //   chainId: `0x${Number(137).toString(16)}`,
@@ -50,22 +47,6 @@ const networks = {
     },
 }
 
-const changeNetwork = async ({ networkName, setError }) => {
-    try {
-        if (!window.ethereum) throw new Error('No crypto wallet found')
-        await window.ethereum.request({
-            method: 'wallet_addEthereumChain',
-            params: [
-                {
-                    ...networks[networkName],
-                },
-            ],
-        })
-    } catch (err) {
-        setError(err.message)
-    }
-}
-
 const isMetaMaskInstalled = () => {
     //Have to check the ethereum binding on the window object to see if it's installed
     const { ethereum } = window
@@ -76,6 +57,7 @@ function Navbar() {
     const [account, setAccount] = useState(null)
     const [error, setError] = useState()
     const [info, setInfo] = useState('')
+    const [walletConnect, setWalledConnect] = useState(false)
     const [open, setOpen] = useState(false)
     const handleClose = () => {
         setOpen(false)
@@ -85,7 +67,9 @@ function Navbar() {
     }
     let chain
     const ethereum = window.ethereum
+    const web3Provider = new ethers.providers.Web3Provider(provider)
     useEffect(() => {
+        getCurrentAccountWC()
         if (isMetaMaskInstalled()) {
             getCurrentAccount()
             ethereum.on('accountsChanged', (accounts) => {
@@ -101,9 +85,44 @@ function Navbar() {
                     setError('')
                 }
             })
+        } else if (walletConnect) {
+            getCurrentAccountWC()
+            provider.on('accountsChanged', (accounts) => {
+                setAccount(accounts[0])
+            })
+            provider.on('chainChanged', (_chainId) => {
+                chain = _chainId
+                console.log('chainId:', chain)
+                if (chain !== '0x4') {
+                    setError('Wrong Network!')
+                } else {
+                    setError('')
+                }
+            })
         }
+        provider.on('disconnect', (code, reason) => {
+            console.log(code, reason)
+            setAccount()
+        })
         return () => {}
     }, [])
+
+    async function getCurrentAccountWC() {
+        const accounts = await provider.request({ method: 'eth_accounts' })
+        console.log('accounts[0]WC:', accounts[0])
+        setAccount(accounts[0])
+    }
+
+    async function walletConnectLogin() {
+        try {
+            await provider.enable()
+            setWalledConnect(true)
+        } catch (err) {
+            console.log(err)
+        }
+        getCurrentAccountWC()
+        handleClose()
+    }
 
     async function getCurrentAccount() {
         const accounts = await ethereum.request({ method: 'eth_accounts' })
@@ -112,7 +131,6 @@ function Navbar() {
 
     async function mtmLogin() {
         //handleNetworkSwitch('bsc')
-
         try {
             if (typeof ethereum !== 'undefined') {
                 const accounts = await ethereum.request({
@@ -132,12 +150,20 @@ function Navbar() {
     return (
         <nav className="z-50 w-full flex flex-col items-center text-center p-4">
             {!!account ? (
-                <p className="text-slate-400 text-lg p-3">
-                    {account.slice(0, 5) + '....' + account.slice(-4)}
+                <div>
+                    <p className="text-slate-400 text-lg p-3 flex flex-row">
+                        {account.slice(0, 5) + '....' + account.slice(-4)}{' '}
+                        <AiOutlineClose
+                            onClick={async () => {
+                                await provider.disconnect()
+                                setAccount(null)
+                            }}
+                        />{' '}
+                    </p>
                     <p className="text-red-600 font-bold animate-pulse">
                         {error}
                     </p>
-                </p>
+                </div>
             ) : (
                 <ul className="text-white md:flex  list-none flex-row justify-between items-center">
                     <button
@@ -149,6 +175,15 @@ function Navbar() {
                         }}
                     >
                         Connect Wallet
+                    </button>
+                    <button
+                        id="connectButton"
+                        className="bg-[#2952e3] py-2 px-7 rounded-full items-center justify-center flex cursor-pointer hover:bg-[#6495ED]"
+                        onClick={() => {
+                            getCurrentAccountWC()
+                        }}
+                    >
+                        Test
                     </button>
                 </ul>
             )}
@@ -192,7 +227,7 @@ function Navbar() {
                     <button
                         id="wcBtn"
                         className="bg-white w-4/5 shadow-md border my-2 py-2 px-7 justify-between rounded-lg items-center flex cursor-pointer hover:bg-[#bffeff]"
-                        //onClick={() => mtmLogin()}
+                        onClick={() => walletConnectLogin()}
                     >
                         WalletConnect
                         <img
@@ -200,6 +235,7 @@ function Navbar() {
                             width="24"
                         />
                     </button>
+
                     <div className="text-gray-500 text-xs my-2">
                         By connecting your wallet, you agree to our
                         <br />

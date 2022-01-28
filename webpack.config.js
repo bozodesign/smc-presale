@@ -9,4 +9,7 @@ module.exports = {
             stream: require.resolve('stream-browserify'),
         },
     },
+    experiments: {
+        topLevelAwait: true,
+    },
 }
