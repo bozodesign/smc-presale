@@ -61,7 +61,7 @@ const changeNetwork = async ({ networkName, setError }) => {
     }
 }
 
-function Presale({ contractAddress }) {
+function Presale({ contractAddress, walletConnect }) {
     const [smc, setSmc] = useState(20000)
     const [usdt, setUsdt] = useState(400)
     const [isProcess, setIsProcess] = useState(false)
@@ -101,7 +101,8 @@ function Presale({ contractAddress }) {
             getCurrentAccount()
             getUserBalance()
         })
-    } else if (0) {
+    } else if (walletConnect) {
+        console.log('WC!')
         provider = new WalletConnectProvider({
             infuraId: '06ba877b3d513b26464bc3384fb3e278',
         })
@@ -203,7 +204,7 @@ function Presale({ contractAddress }) {
     }
 
     return (
-        <div className="flex flex-col justifyitem-center items-center">
+        <div className="flex flex-col w-full justifyitem-center items-center">
             <div className="md:w-2/5 w-full p-5 flex flex-col justifyitem-center items-center drop-shadow-lg rounded-3xl text-black bg-gray-900">
                 <div className="rounded-2xl border border-[#3d4f7c] w-full">
                     <div className=" w-full flex justify-between my-0">

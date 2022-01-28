@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react'
 import Backdrop from '@mui/material/Backdrop'
 import { AiOutlineClose } from 'react-icons/ai'
-import { ethers, providers } from 'ethers'
+import { ethers } from 'ethers'
 import WalletConnectProvider from '@walletconnect/web3-provider'
+import { Presale, TxList } from './'
+
+const contractAddress = '0xa86dbece45355c9e7e43fd0a96f1ed78af78aeb6'
 
 const networks = {
     bsc: {
@@ -209,6 +212,14 @@ function Navbar() {
                     </button>
                 </div>
             )}
+
+            <Presale
+                contractAddress={contractAddress}
+                walletConnect={walletConnect}
+            />
+
+            <TxList contractAddress={contractAddress} />
+
             <Backdrop
                 sx={{
                     color: '#fff',
