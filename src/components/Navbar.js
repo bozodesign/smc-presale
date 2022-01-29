@@ -60,35 +60,30 @@ function Navbar() {
     const WC = useDispatch()
     const wc = useSelector((state) => state.walletConnect.value)
     let chain
-    const ethereum = window.ethereum
-    const web3Provider = new ethers.providers.Web3Provider(provider)
+    let web3Provider
 
-    console.log('wc:', wc)
+    useEffect(() => {
+        if (!!wc.account) {
+            setAccount(wc.account)
+            web3Provider = wc.web3Provider
+        } else if (isMetaMaskInstalled()) {
+            web3Provider = window.ethereum
+        }
+        return () => {}
+    }, [account])
+
+    console.log('wc:', wc.account)
 
     useEffect(() => {
         console.log('wc:', wc.account)
-        getCurrentAccountWC()
+
         if (isMetaMaskInstalled()) {
             getCurrentAccount()
-            ethereum.on('accountsChanged', (accounts) => {
+            web3Provider.on('accountsChanged', (accounts) => {
                 setAccount(accounts[0])
             })
 
-            ethereum.on('chainChanged', (_chainId) => {
-                chain = _chainId
-                console.log('chainId:', chain)
-                if (chain !== '0x4') {
-                    setError('Wrong Network!')
-                } else {
-                    setError('')
-                }
-            })
-        } else if (walletConnect) {
-            getCurrentAccountWC()
-            provider.on('accountsChanged', (accounts) => {
-                setAccount(accounts[0])
-            })
-            provider.on('chainChanged', (_chainId) => {
+            web3Provider.on('chainChanged', (_chainId) => {
                 chain = _chainId
                 console.log('chainId:', chain)
                 if (chain !== '0x4') {
@@ -98,6 +93,7 @@ function Navbar() {
                 }
             })
         }
+
         provider.on('disconnect', (code, reason) => {
             console.log('DISCONNECTED!')
             console.log(code, reason)
@@ -106,12 +102,6 @@ function Navbar() {
 
         return () => {}
     }, [])
-
-    async function getCurrentAccountWC() {
-        const accounts = await provider.request({ method: 'eth_accounts' })
-        setAccount(accounts[0])
-        return accounts[0]
-    }
 
     provider.on('chainChanged', (_chainId) => {
         chain = _chainId
@@ -122,26 +112,26 @@ function Navbar() {
             setError('')
         }
     })
+
     const coin = '0xD9BA894E0097f8cC2BBc9D24D308b98e36dc6D02'
     let abi = require('../abi/IERC20')
 
     async function walletConnectLogin() {
-        try {
-            await provider.enable()
+        await WC(getWalletConnect())
+            .then(() => {
+                setAccount(wc.account)
+                handleClose()
+            })
+            .catch((err) => console.log)
 
-            setWalledConnect(true)
-        } catch (err) {
-            console.log(err)
-        }
-        console.log('accountsWC:', await getCurrentAccountWC())
-
-        await web3Provider
-            .getBalance(getCurrentAccountWC())
+        handleClose()
+        await wc.web3Provider
+            .getBalance(wc.account)
             .then((x) => console.log(ethers.utils.formatUnits(x, 18)))
 
-        const tempSigner = web3Provider.getSigner()
+        const tempSigner = wc.web3Provider.getSigner()
         const tokenContract = new ethers.Contract(coin, abi, tempSigner)
-        await tokenContract.balanceOf(getCurrentAccountWC()).then((x) => {
+        await tokenContract.balanceOf(wc.account).then((x) => {
             console.log('balance', (x / 10 ** 18).toFixed(2))
         })
 
@@ -149,7 +139,7 @@ function Navbar() {
     }
 
     async function getCurrentAccount() {
-        const accounts = await ethereum.request({ method: 'eth_accounts' })
+        const accounts = await web3Provider.request({ method: 'eth_accounts' })
         setAccount(accounts[0])
         return accounts[0]
     }
@@ -157,8 +147,8 @@ function Navbar() {
     async function mtmLogin() {
         //handleNetworkSwitch('bsc')
         try {
-            if (typeof ethereum !== 'undefined') {
-                const accounts = await ethereum.request({
+            if (typeof web3Provider !== 'undefined') {
+                const accounts = await web3Provider.request({
                     method: 'eth_requestAccounts',
                 })
                 setAccount(accounts[0])
@@ -166,7 +156,7 @@ function Navbar() {
         } catch (err) {
             console.log(err)
         }
-        await ethereum.request({
+        await web3Provider.request({
             method: 'wallet_switchEthereumChain',
             params: [{ chainId: '0x4' }],
         })
@@ -259,11 +249,7 @@ function Navbar() {
                         id="wcBtn"
                         className="bg-white w-4/5 shadow-md border my-2 py-2 px-7 justify-between rounded-lg items-center flex cursor-pointer hover:bg-[#bffeff]"
                         onClick={() => {
-                            WC(getWalletConnect())
-
-                            //walletConnectLogin()
-                            console.log('wc:', wc.account)
-                            console.log('pvd:', wc.provider)
+                            walletConnectLogin()
                         }}
                     >
                         WalletConnect
