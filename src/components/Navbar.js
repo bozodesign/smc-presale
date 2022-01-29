@@ -3,7 +3,8 @@ import Backdrop from '@mui/material/Backdrop'
 import { AiOutlineClose } from 'react-icons/ai'
 import { ethers } from 'ethers'
 import WalletConnectProvider from '@walletconnect/web3-provider'
-import { Presale, TxList } from './'
+import { useDispatch, useSelector } from 'react-redux'
+import { getWalletConnect } from '../redux/walletConnect'
 
 const networks = {
     bsc: {
@@ -56,10 +57,16 @@ function Navbar() {
     const handleToggle = () => {
         setOpen(!open)
     }
+    const WC = useDispatch()
+    const wc = useSelector((state) => state.walletConnect.value)
     let chain
     const ethereum = window.ethereum
     const web3Provider = new ethers.providers.Web3Provider(provider)
+
+    console.log('wc:', wc)
+
     useEffect(() => {
+        console.log('wc:', wc.account)
         getCurrentAccountWC()
         if (isMetaMaskInstalled()) {
             getCurrentAccount()
@@ -251,7 +258,13 @@ function Navbar() {
                     <button
                         id="wcBtn"
                         className="bg-white w-4/5 shadow-md border my-2 py-2 px-7 justify-between rounded-lg items-center flex cursor-pointer hover:bg-[#bffeff]"
-                        onClick={() => walletConnectLogin()}
+                        onClick={() => {
+                            WC(getWalletConnect())
+
+                            //walletConnectLogin()
+                            console.log('wc:', wc.account)
+                            console.log('pvd:', wc.provider)
+                        }}
                     >
                         WalletConnect
                         <img

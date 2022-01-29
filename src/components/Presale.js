@@ -6,6 +6,7 @@ import Select from 'react-select'
 import Backdrop from '@mui/material/Backdrop'
 import CircularProgress from '@mui/material/CircularProgress'
 import WalletConnectProvider from '@walletconnect/web3-provider'
+import { useSelector } from 'react-redux'
 
 const USDTAddress = '0xD9BA894E0097f8cC2BBc9D24D308b98e36dc6D02'
 const USDCAddress = '0x01BE23585060835E02B77ef475b0Cc51aA1e0709'
@@ -20,7 +21,7 @@ function Loader() {
     return (
         <button
             type="button"
-            className="text-white w-full mt-2 border-[1px] p-2 border-[#3d4f7c] rounded-full cursor-pointer  cursor-not-allowed flex flex-row items-center justify-center"
+            className="text-white w-full mt-2 border-[1px] p-2 border-[#3d4f7c] rounded-full cursor-pointer cursor-not-allowed flex flex-row items-center justify-center"
         >
             <BiLoaderAlt className="animate-spin mr-2" />
             <span className="animate-pulse">Processing... </span>
@@ -61,7 +62,7 @@ const changeNetwork = async ({ networkName, setError }) => {
     }
 }
 
-function Presale({ contractAddress, walletConnect }) {
+function Presale({ contractAddress }) {
     const [smc, setSmc] = useState(20000)
     const [usdt, setUsdt] = useState(400)
     const [isProcess, setIsProcess] = useState(false)
@@ -92,18 +93,17 @@ function Presale({ contractAddress, walletConnect }) {
     let ethereum
     let tempSigner
 
-    if (isMetaMaskInstalled() && !walletConnect) {
+    if (isMetaMaskInstalled()) {
+        console.log('MT!')
         ethereum = window.ethereum
-        provider = new ethers.providers.Web3Provider(ethereum)
-        tempSigner = provider.getSigner()
-    } else if (walletConnect) {
-        console.log('WC!', walletConnect)
+    } else {
+        console.log('WC!')
         ethereum = new WalletConnectProvider({
-            //infuraId: '06ba877b3d513b26464bc3384fb3e278',
             infuraId: '836dd9508e394e8ebb3d5983bb0d08f2',
         })
-        provider = new ethers.providers.Web3Provider(provider)
     }
+    provider = new ethers.providers.Web3Provider(ethereum)
+    tempSigner = provider.getSigner()
 
     let abi = require('../abi/IERC20')
     const smcContract = contractAddress
