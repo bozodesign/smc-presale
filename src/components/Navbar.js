@@ -4,7 +4,7 @@ import { AiOutlineClose } from 'react-icons/ai'
 import { ethers } from 'ethers'
 import WalletConnectProvider from '@walletconnect/web3-provider'
 import { useDispatch, useSelector } from 'react-redux'
-import { getWalletConnect } from '../redux/walletConnect'
+import { getWalletConnect, clearAccount } from '../redux/walletConnect'
 
 const networks = {
     bsc: {
@@ -40,10 +40,10 @@ const isMetaMaskInstalled = () => {
     return Boolean(ethereum && ethereum.isMetaMask)
 }
 
-const provider = new WalletConnectProvider({
-    //infuraId: '06ba877b3d513b26464bc3384fb3e278',
-    infuraId: '836dd9508e394e8ebb3d5983bb0d08f2',
-})
+// const provider = new WalletConnectProvider({
+//     //infuraId: '06ba877b3d513b26464bc3384fb3e278',
+//     infuraId: '836dd9508e394e8ebb3d5983bb0d08f2',
+// })
 
 function Navbar() {
     const [account, setAccount] = useState(null)
@@ -60,19 +60,20 @@ function Navbar() {
     const WC = useDispatch()
     const wc = useSelector((state) => state.walletConnect.value)
     let chain
-    let web3Provider
+    let web3Provider = window.ethereum
 
     useEffect(() => {
         if (!!wc.account) {
             setAccount(wc.account)
-            web3Provider = wc.web3Provider
+            WC(getWalletConnect())
+            web3Provider = wc.provider
         } else if (isMetaMaskInstalled()) {
             web3Provider = window.ethereum
         }
         return () => {}
     }, [account])
 
-    console.log('wc:', wc.account)
+    console.log('wc:', wc)
 
     useEffect(() => {
         console.log('wc:', wc.account)
@@ -82,36 +83,25 @@ function Navbar() {
             web3Provider.on('accountsChanged', (accounts) => {
                 setAccount(accounts[0])
             })
-
-            web3Provider.on('chainChanged', (_chainId) => {
-                chain = _chainId
-                console.log('chainId:', chain)
-                if (chain !== '0x4') {
-                    setError('Wrong Network!')
-                } else {
-                    setError('')
-                }
-            })
         }
+        // web3Provider.on('disconnect', (code, reason) => {
+        //     console.log('DISCONNECTED!')
+        //     console.log(code, reason)
+        //     setAccount()
+        // })
 
-        provider.on('disconnect', (code, reason) => {
-            console.log('DISCONNECTED!')
-            console.log(code, reason)
-            setAccount()
-        })
+        // web3Provider.on('chainChanged', (_chainId) => {
+        //     chain = _chainId
+        //     console.log('chainId:', chain)
+        //     if (chain != '4') {
+        //         setError('Wrong Network!')
+        //     } else {
+        //         setError('')
+        //     }
+        // })
 
         return () => {}
     }, [])
-
-    provider.on('chainChanged', (_chainId) => {
-        chain = _chainId
-        console.log('chainId:', chain)
-        if (chain != '4') {
-            setError('Wrong Network!')
-        } else {
-            setError('')
-        }
-    })
 
     const coin = '0xD9BA894E0097f8cC2BBc9D24D308b98e36dc6D02'
     let abi = require('../abi/IERC20')
@@ -123,17 +113,6 @@ function Navbar() {
                 handleClose()
             })
             .catch((err) => console.log)
-
-        handleClose()
-        await wc.web3Provider
-            .getBalance(wc.account)
-            .then((x) => console.log(ethers.utils.formatUnits(x, 18)))
-
-        const tempSigner = wc.web3Provider.getSigner()
-        const tokenContract = new ethers.Contract(coin, abi, tempSigner)
-        await tokenContract.balanceOf(wc.account).then((x) => {
-            console.log('balance', (x / 10 ** 18).toFixed(2))
-        })
 
         handleClose()
     }
@@ -170,10 +149,42 @@ function Navbar() {
                         {account.slice(0, 5) + '....' + account.slice(-4)}{' '}
                         <AiOutlineClose
                             onClick={async () => {
-                                await provider.disconnect()
+                                await wc.provider.disconnect()
+                                WC(clearAccount())
                                 setAccount(null)
                             }}
-                        />{' '}
+                        />
+                        <button
+                            id="connectButton"
+                            className="bg-[#2952e3] py-2 px-7 rounded-full items-center justify-center flex cursor-pointer hover:bg-[#6495ED]"
+                            onClick={async () => {
+                                console.log('wc.provider', wc.web3Provider)
+                                await wc.web3Provider
+                                    .getBalance(wc.account)
+                                    .then((x) =>
+                                        console.log(
+                                            ethers.utils.formatUnits(x, 18)
+                                        )
+                                    )
+
+                                const tempSigner = wc.web3Provider.getSigner()
+                                const tokenContract = new ethers.Contract(
+                                    coin,
+                                    abi,
+                                    tempSigner
+                                )
+                                await tokenContract
+                                    .balanceOf(wc.account)
+                                    .then((x) => {
+                                        console.log(
+                                            'balance',
+                                            (x / 10 ** 18).toFixed(2)
+                                        )
+                                    })
+                            }}
+                        >
+                            TEST
+                        </button>
                     </p>
                     <p className="text-red-600 font-bold animate-pulse flex flex-row">
                         {/* <svg

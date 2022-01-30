@@ -27,7 +27,7 @@ const userSlice = createSlice({
     initialState: {
         value: {
             account: '',
-            provider: {},
+            provider: '',
             web3Provider: '',
         },
     },
@@ -46,16 +46,10 @@ const userSlice = createSlice({
     extraReducers(builder) {
         builder.addCase(getWalletConnect.fulfilled, (state, action) => {
             state.status = 'Connected!'
-            state.provider = action.payload
+            state.valuse = action.payload
         })
     },
 })
 
-export const {
-    setProvider,
-    setStableCoin,
-    setAccount,
-    setWeb3Provider,
-    status,
-} = userSlice.actions
+export const { setAccount, clearAccount } = userSlice.actions
 export default userSlice.reducer
