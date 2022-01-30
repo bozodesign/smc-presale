@@ -134,6 +134,7 @@ function Navbar() {
         } catch (err) {
             console.log(err)
         }
+        handleClose()
         await web3Provider.request({
             method: 'wallet_switchEthereumChain',
             params: [{ chainId: '0x4' }],
