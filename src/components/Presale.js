@@ -12,7 +12,6 @@ const USDTAddress = '0xD9BA894E0097f8cC2BBc9D24D308b98e36dc6D02'
 const USDCAddress = '0x01BE23585060835E02B77ef475b0Cc51aA1e0709'
 
 const isMetaMaskInstalled = () => {
-    //Have to check the ethereum binding on the window object to see if it's installed
     const { ethereum } = window
     return Boolean(ethereum && ethereum.isMetaMask)
 }
@@ -95,14 +94,14 @@ function Presale({ contractAddress }) {
     let ethereum
     let tempSigner
 
-    if (isMetaMaskInstalled()) {
-        console.log('MT!')
-        ethereum = window.ethereum
-    } else {
+    if (!!wc.account) {
         console.log('WC!')
         ethereum = new WalletConnectProvider({
             infuraId: '836dd9508e394e8ebb3d5983bb0d08f2',
         })
+    } else if (isMetaMaskInstalled()) {
+        console.log('MT!')
+        ethereum = window.ethereum
     }
     provider = new ethers.providers.Web3Provider(ethereum)
     tempSigner = provider.getSigner()
@@ -310,6 +309,7 @@ function Presale({ contractAddress }) {
                     {error}
                 </span>
             </div>
+
             <Backdrop
                 sx={{
                     color: '#fff',
@@ -325,6 +325,30 @@ function Presale({ contractAddress }) {
                 </div>
                 <br />
             </Backdrop>
+            <button
+                id="connectButton"
+                className="bg-[#2952e3] py-2 px-7 rounded-full items-center justify-center flex cursor-pointer hover:bg-[#6495ED]"
+                onClick={async () => {
+                    //console.log('wc.provider', wc.web3Provider)
+                    await wc.web3Provider
+                        .getBalance(wc.account)
+                        .then((x) =>
+                            console.log(ethers.utils.formatUnits(x, 18))
+                        )
+
+                    const tempSigner = wc.web3Provider.getSigner()
+                    const tokenContract = new ethers.Contract(
+                        coin,
+                        abi,
+                        tempSigner
+                    )
+                    await tokenContract.balanceOf(wc.account).then((x) => {
+                        console.log('balance', (x / 10 ** 18).toFixed(2))
+                    })
+                }}
+            >
+                TEST
+            </button>
         </div>
     )
 }
