@@ -91,20 +91,20 @@ function Presale({ contractAddress }) {
         setOpen(!open)
     }
     let provider
-    let ethereum
+    let ethereum = window.ethereum
     let tempSigner
 
     if (!!wc.account) {
         console.log('WC!')
-        ethereum = new WalletConnectProvider({
-            infuraId: '836dd9508e394e8ebb3d5983bb0d08f2',
-        })
+        ethereum = wc.provider
+        provider = wc.web3Provider
+        tempSigner = provider.getSigner()
     } else if (isMetaMaskInstalled()) {
         console.log('MT!')
         ethereum = window.ethereum
+        provider = new ethers.providers.Web3Provider(ethereum)
+        tempSigner = provider.getSigner()
     }
-    provider = new ethers.providers.Web3Provider(ethereum)
-    tempSigner = provider.getSigner()
 
     let abi = require('../abi/IERC20')
     const smcContract = contractAddress
