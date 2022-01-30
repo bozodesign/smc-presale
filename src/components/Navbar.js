@@ -49,7 +49,6 @@ function Navbar() {
     const [account, setAccount] = useState(null)
     const [error, setError] = useState()
     const [info, setInfo] = useState('')
-    const [walletConnect, setWalledConnect] = useState(false)
     const [open, setOpen] = useState(false)
     const handleClose = () => {
         setOpen(false)
