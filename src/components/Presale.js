@@ -316,7 +316,7 @@ function Presale({ contractAddress }) {
                 open={open}
                 className="flex flex-col"
             >
-                <div className="bg-white m-4 text-center text-gray-900 text-lg p-3 rounded-lg w-2/5 display-linebreak">
+                <div className="bg-white m-4 text-center text-gray-900 text-lg p-3 rounded-lg md:w-2/5 w-full display-linebreak">
                     <CircularProgress color="inherit" />
                     <br />
                     {info}
