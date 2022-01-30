@@ -325,30 +325,6 @@ function Presale({ contractAddress }) {
                 </div>
                 <br />
             </Backdrop>
-            <button
-                id="connectButton"
-                className="bg-[#2952e3] py-2 px-7 rounded-full items-center justify-center flex cursor-pointer hover:bg-[#6495ED]"
-                onClick={async () => {
-                    //console.log('wc.provider', wc.web3Provider)
-                    await wc.web3Provider
-                        .getBalance(wc.account)
-                        .then((x) =>
-                            console.log(ethers.utils.formatUnits(x, 18))
-                        )
-
-                    const tempSigner = wc.web3Provider.getSigner()
-                    const tokenContract = new ethers.Contract(
-                        coin,
-                        abi,
-                        tempSigner
-                    )
-                    await tokenContract.balanceOf(wc.account).then((x) => {
-                        console.log('balance', (x / 10 ** 18).toFixed(2))
-                    })
-                }}
-            >
-                TEST
-            </button>
         </div>
     )
 }
