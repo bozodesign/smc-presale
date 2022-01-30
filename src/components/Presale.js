@@ -72,6 +72,8 @@ function Presale({ contractAddress }) {
     const [open, setOpen] = useState(false)
     const [focusedInput, setFocus] = useState(null)
     const [coin, setCoin] = useState(USDTAddress)
+    const [account, setAccount] = useState(null)
+    const wc = useSelector((state) => state.walletConnect.value)
 
     useEffect(() => {
         if (focusedInput == 'coin') {
